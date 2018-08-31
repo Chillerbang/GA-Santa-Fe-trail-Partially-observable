@@ -28,7 +28,9 @@ namespace SantaFeTrail
         int aXpos = 0;
         int aYpos = 0;
 
-        string[] chroma = new string[200]; // limited to that of 200 
+        int maxScore = 55;
+        int numGenerations = 100;
+        string[] chroma = new string[100]; // limited to that of 200 
 
         public MainWindow()
         {
@@ -40,6 +42,15 @@ namespace SantaFeTrail
             //intialise the Game
             initaliseData();
             drawGUI();
+            chroma = createIntialPopulation();
+        }
+
+        private string[] createIntialPopulation()
+        {
+            for (int i = 0; i <100; i++)
+            {
+
+            }
         }
 
         private void drawGUI()
@@ -68,6 +79,7 @@ namespace SantaFeTrail
                 };
                 pnlDisplay.Children.Add(L);   
             }
+
             //itsa me mario?
             BitmapImage imgMario = new BitmapImage(new Uri("mario.png", UriKind.Relative));
             Rectangle mario = new Rectangle();
@@ -78,8 +90,6 @@ namespace SantaFeTrail
             mario.SetValue(Canvas.TopProperty, aYpos * pnlDisplay.Height / height);
             mario.Fill = new ImageBrush(imgMario);
             pnlDisplay.Children.Add(mario);
-
-            
             
             // lets get some coins
             BitmapImage imgcoin = new BitmapImage(new Uri("coin.png", UriKind.Relative));
@@ -103,14 +113,10 @@ namespace SantaFeTrail
                     }
                     if (map[i][j] == '1')
                     {
-                        coin.SetValue(Canvas.LeftProperty, j * pnlDisplay.Width / width +1);
-                        coin.SetValue(Canvas.TopProperty, i * pnlDisplay.Height / height +1);
-                        coin.Fill = new SolidColorBrush(Color.FromRgb(0, 153, 51));
                         coin.SetValue(Canvas.LeftProperty, j * pnlDisplay.Width / width + 1);
                         coin.SetValue(Canvas.TopProperty, i * pnlDisplay.Height / height + 1);
                         coin.Fill = new ImageBrush(imgcoin);
                         pnlDisplay.Children.Add(coin);
-                        
                     }
                 }
             }

@@ -16,7 +16,7 @@
          ScrollViewer.VerticalScrollBarVisibility="Auto"
          ScrollViewer.CanContentScroll="True"/>
         </StackPanel>
-        <Canvas x:Name="pnlDisplay"  Height="520" Width="520" Background="White"  VerticalAlignment="Top" Margin="320,55,53.333,0"/>
+        <Canvas x:Name="pnlDisplay"  Height="520" Width="520" Background="SlateGray"  VerticalAlignment="Top" Margin="320,55,53.333,0"/>
 
     </Grid>
 </Window>
