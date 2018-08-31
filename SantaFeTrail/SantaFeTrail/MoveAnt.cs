@@ -8,34 +8,22 @@ namespace SantaFeTrail
 {
     class MoveAnt // always clone before
     {
+        int aPostiony = 0;
+        int aPostionx = 0;
+        public MoveAnt(int aXpos,int aYpos)
+        {
+            aPostionx = aXpos;
+            aPostiony = aYpos;
+        }
+
         public int CalcScore(int[] MovementSet, char[][] map)
         {
             int width = 25;
             int height = 25;
             int score = 0;
-            int aPostiony = 0;
-            int apostionx = 0;
-            int currentx = 0;
-            int currenty = 0;
-            bool end = false;
-            // find A
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    if (map[i][j] == 'A')
-                    {
-                        currentx = apostionx = i;
-                        currenty = aPostiony = j;
-                        end = true;
-                        break;
-                    }
-                }
-                if (end == true)
-                {
-                    break;
-                }
-            }
+            
+            int currentx = aPostionx;
+            int currenty = aPostiony;
             
             for (int i = 0; i < MovementSet.Length; i++)
             {
