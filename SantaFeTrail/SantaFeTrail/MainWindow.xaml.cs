@@ -49,9 +49,13 @@ namespace SantaFeTrail
             drawGUI();
             //start genetic algorithem
             createIntialPopulation();
-            // test these children who are very bad
+            
 
-
+            int pathScore = 0;
+            while (pathScore < maxScore)
+            {
+                // test these children who are very bad
+            }
         }
 
         private void createIntialPopulation()
