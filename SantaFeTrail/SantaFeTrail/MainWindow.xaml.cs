@@ -24,9 +24,14 @@ namespace SantaFeTrail
     public partial class MainWindow : Window
     {
 
-        private static int maxScore = 55;
+        private static int maxScore = 250;
         private static int numberOfcandidates = 1000;
-        private static int chromaLenght = 65;
+        private static int chromaLenght = 40;
+        private static double constmutationChance = 0.01;
+
+        string bestChroma = "";
+        int bestScore = 0;
+        List<string> stringBest;
 
         char[][] map;
         int width = 25;
@@ -49,18 +54,37 @@ namespace SantaFeTrail
             drawGUI(map, aXpos, aYpos);
             //start genetic algorithem
             createIntialPopulation();
-            
+            int max = 0;
+            int NumberIterations = 0;
             // testing
+            while (max < maxScore) { 
+                int[] pathScore = new int[numberOfcandidates];
+                char[][] cpyMap = new char[height][];
+                for (int k = 0; k < width; k++)
+                {
+                    cpyMap[k] = new char[width];
+                }
 
-            int[] pathScore = new int[numberOfcandidates];
-            char[][] cpyMap = new char[height][];
-            for (int k = 0; k < width; k++)
-            {
-                cpyMap[k] = new char[width];
-            }
-
-            for (int i = 0; i < numberOfcandidates; i++)
-            {
+                for (int i = 0; i < numberOfcandidates; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        for (int k = 0; k < height; k++)
+                        {
+                            cpyMap[j][k] = map[j][k];
+                        }
+                    }
+                    MoveAnt mAnt = new MoveAnt(aXpos, aXpos, cpyMap);
+                    for (int j = 0; j < width; j++)
+                    {
+                        for (int k = 0; k < height; k++)
+                        {
+                            cpyMap[j][k] = map[j][k];
+                        }
+                    }
+                    pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
+                
+                }
                 for (int j = 0; j < width; j++)
                 {
                     for (int k = 0; k < height; k++)
@@ -68,48 +92,121 @@ namespace SantaFeTrail
                         cpyMap[j][k] = map[j][k];
                     }
                 }
-                MoveAnt mAnt = new MoveAnt(aXpos, aXpos);
-                pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
-                //tbLog.Text += pathScore[i] + "\n";
-                
-            }
-            for (int j = 0; j < width; j++)
-            {
-                for (int k = 0; k < height; k++)
+                if (NumberIterations == 2)
                 {
-                    cpyMap[j][k] = map[j][k];
+                    // nuke it all
+                    NumberIterations = 0;
+                    createIntialPopulation();
                 }
+
+                max = pathScore.Max();
+                int postion = Array.IndexOf(pathScore, max);
+                stringBest.Add(chroma[postion]);
+                if (max > bestScore)
+                {
+                    bestScore = max;
+                    bestChroma = chroma[postion];
+                }
+
+                System.Diagnostics.Debug.WriteLine("MAX " + max);
+               
+
+                if (max > maxScore)
+                {
+                    // play the best
+                    AnimateBest(cpyMap, chroma[postion]);
+                    break;
+                }
+                
+
+                // now for something else make me some genes
+                string[] geneticPool = selection(pathScore, chroma);
+
+                // generate that me some stuff? no i mean i want a new population 
+                chroma = newPopulation(geneticPool);
+                // include the high scores
+                //chroma[RandomNumber(0, numberOfcandidates)] = bestChroma;
+                NumberIterations++;
             }
-
-            int max = pathScore.Max();
-            int postion = Array.IndexOf(pathScore, max);
-
-            // play the best
-            AnimateBest(cpyMap, chroma[postion]);
-            drawGUI(map, aXpos, aYpos);
-
-            // now for something else make me some genes
-            string[] geneticPool = selection(pathScore, chroma);
-
-            // generate that me some stuff? no i mean i want a new population 
-            chroma = newPopulation(geneticPool);
-
         }
 
         private string[] newPopulation(string[] geneticPool)
         {
-            throw new NotImplementedException();
+            string[] newChroma = new string[numberOfcandidates];
+            // here we look at the terrible implementation of some cross over? i guess it should be fine.. the mutation that is
+            newChroma = crossOver(geneticPool);
+
+            newChroma = mutate(newChroma);
+
+            return newChroma;
+        }
+
+        private string[] mutate(string[] newChroma)
+        {
+            for (int i = 0; i < newChroma.Length; i++)
+            {
+                int randomToMutate = RandomNumber(0, 100);
+                int mutationChance = (int)Math.Round(constmutationChance * 100);
+                if (randomToMutate < mutationChance)
+                {
+                    int postion = RandomNumber(0, chromaLenght);
+                    StringBuilder sb = new StringBuilder(newChroma[i]);
+                    int direction = RandomNumber(0, 3);
+                    sb[postion] = (char)direction;
+                    newChroma[i] = sb.ToString();
+                }
+            }
+            return newChroma;
+        }
+
+        int RandomNumber(int min, int max)
+        {
+            Random random = new Random();
+            return random.Next(min, max);
+
+        }
+
+        private string[] crossOver(string[] geneticPool)
+        {
+            string[] NewChroma = new string[numberOfcandidates];
+            for (int i =0; i < numberOfcandidates; i++)
+            {
+                int postionAParent = RandomNumber(0, geneticPool.Length);
+                int postionBParent = RandomNumber(0, geneticPool.Length);
+                // cross half and half
+
+                StringBuilder sba = new StringBuilder(geneticPool[postionAParent]);
+                StringBuilder sbb = new StringBuilder(geneticPool[postionBParent]);
+                int half1 = sba.Length / 2;
+                int half2 = sbb.Length - half1;
+                char[] halfOne = new char[half1];
+                char[] halfTwo = new char[half2];
+                sba.CopyTo(0, halfOne, 0, half1);
+                sbb.CopyTo(half1, halfTwo, 0, half2);
+
+                NewChroma[i] = new string(halfOne) + new string(halfTwo);
+                
+            }
+            return NewChroma;
         }
 
         private string[] selection(int[] pathScore,string[] chroma)
         {
             List<string> Listchroma = new List<string>();
+            // limit gene sturation
+            
             for (int i = 0; i < pathScore.Length; i++)
             {
-                if (pathScore[i] != 0)
+                int count = 0;
+                if (pathScore[i] > 50)
                     for (int j = 0; j < pathScore[i]; j++)
                     {
                         Listchroma.Add(chroma[i]);
+                        count++;
+                        if (count > 10)
+                        {
+                            break;
+                        }
                     }
             }
             return Listchroma.ToArray();
@@ -129,7 +226,6 @@ namespace SantaFeTrail
                 }
 
                 chroma[i] = sequence;
-                //tbLog.Text += sequence + "\n";
             }
         }
 
@@ -266,7 +362,7 @@ namespace SantaFeTrail
         private void initaliseData()
         {
             //load the data into an arrays
-            
+            stringBest = new List<string>();
             var filename = "Trail.Map";
             string fullData = File.ReadAllText(filename);
             map = new char[25][];
