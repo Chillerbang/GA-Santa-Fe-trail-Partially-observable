@@ -53,10 +53,10 @@ namespace SantaFeTrail
             // testing
 
             int[] pathScore = new int[numberOfcandidates];
-            char[][] cpyMap = new char[25][];
-            for (int k = 0; k < height; k++)
+            char[][] cpyMap = new char[height][];
+            for (int k = 0; k < width; k++)
             {
-                cpyMap[k] = new char[25];
+                cpyMap[k] = new char[width];
             }
 
             for (int i = 0; i < numberOfcandidates; i++)
@@ -71,7 +71,7 @@ namespace SantaFeTrail
                 MoveAnt mAnt = new MoveAnt(aXpos, aXpos);
                 pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
                 //tbLog.Text += pathScore[i] + "\n";
-                // play the best
+                
             }
             for (int j = 0; j < width; j++)
             {
@@ -83,27 +83,36 @@ namespace SantaFeTrail
 
             int max = pathScore.Max();
             int postion = Array.IndexOf(pathScore, max);
+
+            // play the best
             AnimateBest(cpyMap, chroma[postion]);
             drawGUI(map, aXpos, aYpos);
 
-            // now for something else
+            // now for something else make me some genes
+            string[] geneticPool = selection(pathScore, chroma);
 
+            // generate that me some stuff? no i mean i want a new population 
+            chroma = newPopulation(geneticPool);
 
-            //for (int i = 0; i < width; i++)
-            //{
-            //    for (int j = 0; j < height; j++)
-            //    {
-            //        tbLog.Text += map[i][j];
-            //    }
-            //    //tbLog.Text += "\n";
-            //}
-
-            
         }
 
-        private string[] selection(int[] pathScore,string[] )
+        private string[] newPopulation(string[] geneticPool)
         {
+            throw new NotImplementedException();
+        }
 
+        private string[] selection(int[] pathScore,string[] chroma)
+        {
+            List<string> Listchroma = new List<string>();
+            for (int i = 0; i < pathScore.Length; i++)
+            {
+                if (pathScore[i] != 0)
+                    for (int j = 0; j < pathScore[i]; j++)
+                    {
+                        Listchroma.Add(chroma[i]);
+                    }
+            }
+            return Listchroma.ToArray();
         }
 
         private void createIntialPopulation()
