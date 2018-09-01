@@ -24,9 +24,9 @@ namespace SantaFeTrail
     public partial class MainWindow : Window
     {
 
-        private static int maxScore = 20050;
+        private static int maxScore = 55;
         private static int numberOfcandidates = 1000;
-        private static int chromaLenght = 100;
+        private static int chromaLenght = 65;
         private static double constmutationChance = 0.01;
 
         char[][] map;
@@ -53,7 +53,7 @@ namespace SantaFeTrail
             int max = 0;
             int NumberIterations = 0;
             // testing
-            while (true) { 
+            while (max < maxScore) { 
                 int[] pathScore = new int[numberOfcandidates];
                 char[][] cpyMap = new char[height][];
                 for (int k = 0; k < width; k++)
@@ -72,7 +72,7 @@ namespace SantaFeTrail
                     }
                     MoveAnt mAnt = new MoveAnt(aXpos, aXpos);
                     pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
-                    //tbLog.Text += "Best Score" + pathScore[i] + "\n";
+                    tbLog.Text += "Best Score" + pathScore[i] + "\n";
                 
                 }
                 for (int j = 0; j < width; j++)
@@ -82,41 +82,24 @@ namespace SantaFeTrail
                         cpyMap[j][k] = map[j][k];
                     }
                 }
+
                 max = pathScore.Max();
-                System.Diagnostics.Debug.WriteLine("max" +max);
-                tbLog.Text += "Best Score" + pathScore.Max() + "\n";
-                tbLog.Text += "iterations" + NumberIterations + "\n";
-                if (NumberIterations == 5)
-                {
-                    NumberIterations = 0;
-                    //string save = chroma[Array.IndexOf(pathScore, max)];
-                    createIntialPopulation();
-                    //chroma[RandomNumber(0, numberOfcandidates)] = save;
-                }
-                // play the best
                 int postion = Array.IndexOf(pathScore, max);
-                if (max > maxScore)
-                {
-                    AnimateBest(cpyMap, chroma[postion]);
-                    drawGUI(map, aXpos, aYpos); tbLog.Text += "Best Score" + pathScore.Max() + "\n";
-                    tbLog.Text += "iterations" + NumberIterations + "\n";
-                    break;
-                }
-               
+
+                // play the best
+                AnimateBest(cpyMap, chroma[postion]);
+                drawGUI(map, aXpos, aYpos);
 
                 // now for something else make me some genes
-                string[][] geneticPool = selection(pathScore, chroma);
+                string[] geneticPool = selection(pathScore, chroma);
 
                 // generate that me some stuff? no i mean i want a new population 
                 chroma = newPopulation(geneticPool);
                 NumberIterations++;
             }
-
-            
-
         }
 
-        private string[] newPopulation(string[][] geneticPool)
+        private string[] newPopulation(string[] geneticPool)
         {
             string[] newChroma = new string[numberOfcandidates];
             // here we look at the terrible implementation of some cross over? i guess it should be fine.. the mutation that is
@@ -152,93 +135,30 @@ namespace SantaFeTrail
 
         }
 
-        private string[] crossOver(string[][] geneticPool)
+        private string[] crossOver(string[] geneticPool)
         {
             string[] NewChroma = new string[numberOfcandidates];
-            int total = 0;
-            int temp = 0;
-            for (int i = 0; i < geneticPool.Length; i++)
-            {
-                if (Int32.TryParse(geneticPool[i][1], out temp))
-                total += temp;
-            }
-            
             for (int i =0; i < numberOfcandidates; i++)
             {
-                int postionAParent = RandomNumber(0, temp);
-                int postionBParent = RandomNumber(0, temp);
+                int postionAParent = RandomNumber(0, geneticPool.Length);
+                int postionBParent = RandomNumber(0, geneticPool.Length);
                 // cross half and half
-                bool theSame = true;
-                while (theSame)
-                {
-                    if (postionAParent == postionBParent)
-                    {
-                        postionBParent = RandomNumber(0, temp);
-                    }
-                    else
-                    {
-                        theSame = false;
-                    }
-                }
-                // find index of parent
-                int parentaPos = 0;
-                int parentbPos = 0;
-                int vala = 0;
-                int valb = 0;
-
-
-                for (int j = 0; j < geneticPool.Length; j++)
-                {
-                    if (Int32.TryParse(geneticPool[j][1], out vala))
-                        postionAParent -= vala;
-
-                    if (postionAParent < 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        parentaPos++;
-                    }
-                }
-
-                for (int j = 0; j < geneticPool.Length; j++)
-                {
-
-                    if (Int32.TryParse(geneticPool[j][1], out valb))
-                        postionBParent -= valb;
-                    if (postionBParent < 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        parentbPos++;
-                    }
-                }
-                // ratio/ratio split
-                NewChroma[i] = geneticPool[parentaPos][0].Substring(0, chromaLenght / 2) + geneticPool[parentbPos][0].Substring(chromaLenght / 2,  chromaLenght / 2);
-                //NewChroma[i] = geneticPool[postionAParent];
             }
             return NewChroma;
         }
 
-        private string[][] selection(int[] pathScore,string[] chroma)
+        private string[] selection(int[] pathScore,string[] chroma)
         {
-            string[][] ret = new string[chroma.Length][];
-
-            for (int i = 0; i < chroma.Length; i++)
-            {
-                ret[i] = new string[2];
-            }
-
+            List<string> Listchroma = new List<string>();
             for (int i = 0; i < pathScore.Length; i++)
             {
-                ret[i][0] = chroma[i];
-                ret[i][1] = pathScore[i].ToString();
+                if (pathScore[i] != 0)
+                    for (int j = 0; j < pathScore[i]; j++)
+                    {
+                        Listchroma.Add(chroma[i]);
+                    }
             }
-
-            return ret;
+            return Listchroma.ToArray();
         }
 
         private void createIntialPopulation()
