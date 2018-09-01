@@ -155,25 +155,62 @@ namespace SantaFeTrail
         private string[] crossOver(string[][] geneticPool)
         {
             string[] NewChroma = new string[numberOfcandidates];
+            int total = 0;
+            int temp = 0;
+            for (int i = 0; i < geneticPool.Length; i++)
+            {
+                if (Int32.TryParse(geneticPool[i][1], out temp))
+                total += temp;
+            }
+            
             for (int i =0; i < numberOfcandidates; i++)
             {
-                int postionAParent = RandomNumber(0, geneticPool.Length);
-                int postionBParent = RandomNumber(0, geneticPool.Length);
+                int postionAParent = RandomNumber(0, temp);
+                int postionBParent = RandomNumber(0, temp);
                 // cross half and half
                 bool theSame = true;
                 while (theSame)
                 {
                     if (postionAParent == postionBParent)
                     {
-                        postionBParent = RandomNumber(0, geneticPool.Length);
+                        postionBParent = RandomNumber(0, temp);
                     }
                     else
                     {
                         theSame = false;
                     }
                 }
+                // find index of parent
+                int parentaPos = 0;
+                int parentbPos = 0; 
+
+                for (int j = geneticPool.Length; j > 0; j--)
+                {
+                    if (postionAParent < 0)
+                    {
+                        parentaPos = geneticPool.Length - j;
+                    }
+                    else
+                    {
+                        if (Int32.TryParse(geneticPool[j][1], out temp))
+                            postionAParent -= temp;
+                    }
+                }
+
+                for (int j = geneticPool.Length; j > 0; j--)
+                {
+                    if (postionBParent < 0)
+                    {
+                        parentbPos = geneticPool.Length - j;
+                    }
+                    else
+                    {
+                        if (Int32.TryParse(geneticPool[j][1], out temp))
+                            postionBParent -= temp;
+                    }
+                }
                 // ratio/ratio split
-                NewChroma[i] = geneticPool[postionAParent].Substring(0, chromaLenght / 2) + geneticPool[postionBParent].Substring(chromaLenght / 2,  chromaLenght / 2);
+                NewChroma[i] = geneticPool[parentaPos][0].Substring(0, chromaLenght / 2) + geneticPool[parentbPos][0].Substring(chromaLenght / 2,  chromaLenght / 2);
                 //NewChroma[i] = geneticPool[postionAParent];
             }
             return NewChroma;
