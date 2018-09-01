@@ -20,17 +20,22 @@ namespace SantaFeTrail
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
     public partial class MainWindow : Window
     {
+
+        private static int maxScore = 55;
+        private static int numGenerations = 1000;
+        private static int chromaLenght = 100;
+
         char[][] map;
         int width = 25;
         int height = 25;
         int aXpos = 0;
         int aYpos = 0;
 
-        int maxScore = 55;
-        int numGenerations = 100;
-        string[] chroma = new string[100]; // limited to that of 200 
+        
+        string[] chroma = new string[numGenerations]; // limited to that of 200 
 
         public MainWindow()
         {
@@ -42,14 +47,27 @@ namespace SantaFeTrail
             //intialise the Game
             initaliseData();
             drawGUI();
-            chroma = createIntialPopulation();
+            //start genetic algorithem
+            createIntialPopulation();
+            // test these children who are very bad
+
+
         }
 
-        private string[] createIntialPopulation()
+        private void createIntialPopulation()
         {
-            for (int i = 0; i <100; i++)
+            Random r = new Random();
+            
+            string sequence;
+            for (int i = 0; i < numGenerations; i++)
             {
-
+                sequence = "";
+                for (int j = 0; j < chromaLenght; j++)
+                {
+                    sequence += r.Next(0, 4);
+                }
+                chroma[i] = sequence;
+                tbLog.Text += sequence + "\n";
             }
         }
 
