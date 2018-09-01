@@ -27,7 +27,6 @@ namespace SantaFeTrail
         private static int maxScore = 55;
         private static int numberOfcandidates = 1000;
         private static int chromaLenght = 65;
-        private static double constmutationChance = 0.01;
 
         char[][] map;
         int width = 25;
@@ -50,31 +49,18 @@ namespace SantaFeTrail
             drawGUI(map, aXpos, aYpos);
             //start genetic algorithem
             createIntialPopulation();
-            int max = 0;
-            int NumberIterations = 0;
+            
             // testing
-            while (max < maxScore) { 
-                int[] pathScore = new int[numberOfcandidates];
-                char[][] cpyMap = new char[height][];
-                for (int k = 0; k < width; k++)
-                {
-                    cpyMap[k] = new char[width];
-                }
 
-                for (int i = 0; i < numberOfcandidates; i++)
-                {
-                    for (int j = 0; j < width; j++)
-                    {
-                        for (int k = 0; k < height; k++)
-                        {
-                            cpyMap[j][k] = map[j][k];
-                        }
-                    }
-                    MoveAnt mAnt = new MoveAnt(aXpos, aXpos);
-                    pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
-                    tbLog.Text += "Best Score" + pathScore[i] + "\n";
-                
-                }
+            int[] pathScore = new int[numberOfcandidates];
+            char[][] cpyMap = new char[height][];
+            for (int k = 0; k < width; k++)
+            {
+                cpyMap[k] = new char[width];
+            }
+
+            for (int i = 0; i < numberOfcandidates; i++)
+            {
                 for (int j = 0; j < width; j++)
                 {
                     for (int k = 0; k < height; k++)
@@ -82,69 +68,37 @@ namespace SantaFeTrail
                         cpyMap[j][k] = map[j][k];
                     }
                 }
-
-                max = pathScore.Max();
-                int postion = Array.IndexOf(pathScore, max);
-
-                // play the best
-                AnimateBest(cpyMap, chroma[postion]);
-                drawGUI(map, aXpos, aYpos);
-
-                // now for something else make me some genes
-                string[] geneticPool = selection(pathScore, chroma);
-
-                // generate that me some stuff? no i mean i want a new population 
-                chroma = newPopulation(geneticPool);
-                NumberIterations++;
+                MoveAnt mAnt = new MoveAnt(aXpos, aXpos);
+                pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
+                //tbLog.Text += pathScore[i] + "\n";
+                
             }
+            for (int j = 0; j < width; j++)
+            {
+                for (int k = 0; k < height; k++)
+                {
+                    cpyMap[j][k] = map[j][k];
+                }
+            }
+
+            int max = pathScore.Max();
+            int postion = Array.IndexOf(pathScore, max);
+
+            // play the best
+            AnimateBest(cpyMap, chroma[postion]);
+            drawGUI(map, aXpos, aYpos);
+
+            // now for something else make me some genes
+            string[] geneticPool = selection(pathScore, chroma);
+
+            // generate that me some stuff? no i mean i want a new population 
+            chroma = newPopulation(geneticPool);
+
         }
 
         private string[] newPopulation(string[] geneticPool)
         {
-            string[] newChroma = new string[numberOfcandidates];
-            // here we look at the terrible implementation of some cross over? i guess it should be fine.. the mutation that is
-            newChroma = crossOver(geneticPool);
-
-            newChroma = mutate(newChroma);
-
-            return newChroma;
-        }
-
-        private string[] mutate(string[] newChroma)
-        {
-            for (int i = 0; i < newChroma.Length; i++)
-            {
-                int randomToMutate = RandomNumber(0, 100);
-                int mutationChance = (int)Math.Round(constmutationChance * 100);
-                if (randomToMutate < mutationChance)
-                {
-                    int postion = RandomNumber(0, chromaLenght);
-                    StringBuilder sb = new StringBuilder(newChroma[i]);
-                    int direction = RandomNumber(0, 3);
-                    sb[postion] = (char)direction;
-                    newChroma[i] = sb.ToString();
-                }
-            }
-            return newChroma;
-        }
-
-        int RandomNumber(int min, int max)
-        {
-            Random random = new Random();
-            return random.Next(min, max);
-
-        }
-
-        private string[] crossOver(string[] geneticPool)
-        {
-            string[] NewChroma = new string[numberOfcandidates];
-            for (int i =0; i < numberOfcandidates; i++)
-            {
-                int postionAParent = RandomNumber(0, geneticPool.Length);
-                int postionBParent = RandomNumber(0, geneticPool.Length);
-                // cross half and half
-            }
-            return NewChroma;
+            throw new NotImplementedException();
         }
 
         private string[] selection(int[] pathScore,string[] chroma)
@@ -175,6 +129,7 @@ namespace SantaFeTrail
                 }
 
                 chroma[i] = sequence;
+                //tbLog.Text += sequence + "\n";
             }
         }
 
