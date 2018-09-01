@@ -6,14 +6,39 @@ using System.Threading.Tasks;
 
 namespace SantaFeTrail
 {
+    struct xandy
+    {
+        public int x;
+        public int y;
+        public bool found;
+    }
     class MoveAnt // always clone before
     {
         int aPostiony = 0;
         int aPostionx = 0;
-        public MoveAnt(int aXpos,int aYpos)
+        int width = 25;
+        int height = 25;
+        xandy[] allCoins;
+        public MoveAnt(int aXpos,int aYpos, char[][] map)
         {
             aPostionx = aXpos;
             aPostiony = aYpos;
+            xandy x;
+            List<xandy> lxandy = new List<xandy>();
+            for (int j = 0; j < width; j++)
+            {
+                for (int k = 0; k < height; k++)
+                {
+                    if (map[j][k] == '1')
+                    {
+                        x.x = k;
+                        x.y = j;
+                        x.found = false;
+                        lxandy.Add(x);
+                    }
+                }
+            }
+            allCoins = lxandy.ToArray();
         }
 
         public int CalcScore(string MovementSet, char[][] map)
@@ -24,6 +49,8 @@ namespace SantaFeTrail
             
             int currentx = aPostionx;
             int currenty = aPostiony;
+
+            //find coins
             
             for (int i = 0; i < MovementSet.Length; i++)
             {
@@ -72,11 +99,56 @@ namespace SantaFeTrail
                 }
                 if (map[currenty][currentx] == '1')
                 {
-                    map[currenty][currentx] = '0';
-                    score++;
+                    map[currenty][currentx] = '1';
+                    score += 15;
+                    for (int l = 0; l < allCoins.Length; l++)
+                    {
+                        if (allCoins[l].y == currenty && allCoins[l].x == currentx)
+                        {
+                            allCoins[l].found = true;
+                            break;
+                        }
+                    }
+                }
+                if (map[currenty][currentx] == '0')
+                {
+                    map[currenty][currentx] = '3';
+                    // encorage if you are getting closer
+                    for (int l = 0; l < allCoins.Length; l++)
+                    {
+                        if (((allCoins[l].x + 1 == currentx) || (allCoins[l].x - 1 == currentx) || (allCoins[l].x == currentx)) && ((allCoins[l].y == currenty) || (allCoins[l].y - 1 == currenty) || (allCoins[l].y + 1 == currenty)) && (allCoins[l].found == false))
+                        {
+                            score += 5;
+                        }
+                        else
+                        {
+                            //if (score > 2)
+                            //{
+                            //    score -= 1;
+                            //}
+                            
+                        }
+
+                    }
+                }
+                if (map[currenty][currentx] == '3')
+                {
+                    if (score > 12)
+                    {
+                        score -= 100;
+                    }
+                    else
+                    {
+                        score= 3;
+                    }
                 }
             }
             return score;
+        }
+
+        private bool close(int currenty, int y, int currentx, int x)
+        {
+            throw new NotImplementedException();
         }
     }
 }
