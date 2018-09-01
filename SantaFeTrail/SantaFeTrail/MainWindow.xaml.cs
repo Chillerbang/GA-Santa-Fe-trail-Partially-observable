@@ -24,9 +24,9 @@ namespace SantaFeTrail
     public partial class MainWindow : Window
     {
 
-        private static int maxScore = 55;
+        private static int maxScore = 20050;
         private static int numberOfcandidates = 1000;
-        private static int chromaLenght = 65;
+        private static int chromaLenght = 100;
         private static double constmutationChance = 0.01;
 
         char[][] map;
@@ -53,7 +53,7 @@ namespace SantaFeTrail
             int max = 0;
             int NumberIterations = 0;
             // testing
-            while (max < maxScore) { 
+            while (true) { 
                 int[] pathScore = new int[numberOfcandidates];
                 char[][] cpyMap = new char[height][];
                 for (int k = 0; k < width; k++)
@@ -72,7 +72,7 @@ namespace SantaFeTrail
                     }
                     MoveAnt mAnt = new MoveAnt(aXpos, aXpos);
                     pathScore[i] = mAnt.CalcScore(chroma[i], cpyMap);
-                    tbLog.Text += "Best Score" + pathScore[i] + "\n";
+                    //tbLog.Text += "Best Score" + pathScore[i] + "\n";
                 
                 }
                 for (int j = 0; j < width; j++)
@@ -82,24 +82,41 @@ namespace SantaFeTrail
                         cpyMap[j][k] = map[j][k];
                     }
                 }
-
                 max = pathScore.Max();
-                int postion = Array.IndexOf(pathScore, max);
-
+                System.Diagnostics.Debug.WriteLine("max" +max);
+                tbLog.Text += "Best Score" + pathScore.Max() + "\n";
+                tbLog.Text += "iterations" + NumberIterations + "\n";
+                if (NumberIterations == 5)
+                {
+                    NumberIterations = 0;
+                    //string save = chroma[Array.IndexOf(pathScore, max)];
+                    createIntialPopulation();
+                    //chroma[RandomNumber(0, numberOfcandidates)] = save;
+                }
                 // play the best
-                AnimateBest(cpyMap, chroma[postion]);
-                drawGUI(map, aXpos, aYpos);
+                int postion = Array.IndexOf(pathScore, max);
+                if (max > maxScore)
+                {
+                    AnimateBest(cpyMap, chroma[postion]);
+                    drawGUI(map, aXpos, aYpos); tbLog.Text += "Best Score" + pathScore.Max() + "\n";
+                    tbLog.Text += "iterations" + NumberIterations + "\n";
+                    break;
+                }
+               
 
                 // now for something else make me some genes
-                string[] geneticPool = selection(pathScore, chroma);
+                string[][] geneticPool = selection(pathScore, chroma);
 
                 // generate that me some stuff? no i mean i want a new population 
                 chroma = newPopulation(geneticPool);
                 NumberIterations++;
             }
+
+            
+
         }
 
-        private string[] newPopulation(string[] geneticPool)
+        private string[] newPopulation(string[][] geneticPool)
         {
             string[] newChroma = new string[numberOfcandidates];
             // here we look at the terrible implementation of some cross over? i guess it should be fine.. the mutation that is
@@ -135,7 +152,7 @@ namespace SantaFeTrail
 
         }
 
-        private string[] crossOver(string[] geneticPool)
+        private string[] crossOver(string[][] geneticPool)
         {
             string[] NewChroma = new string[numberOfcandidates];
             for (int i =0; i < numberOfcandidates; i++)
@@ -143,22 +160,42 @@ namespace SantaFeTrail
                 int postionAParent = RandomNumber(0, geneticPool.Length);
                 int postionBParent = RandomNumber(0, geneticPool.Length);
                 // cross half and half
+                bool theSame = true;
+                while (theSame)
+                {
+                    if (postionAParent == postionBParent)
+                    {
+                        postionBParent = RandomNumber(0, geneticPool.Length);
+                    }
+                    else
+                    {
+                        theSame = false;
+                    }
+                }
+                // ratio/ratio split
+                NewChroma[i] = geneticPool[postionAParent].Substring(0, chromaLenght / 2) + geneticPool[postionBParent].Substring(chromaLenght / 2,  chromaLenght / 2);
+                //NewChroma[i] = geneticPool[postionAParent];
             }
             return NewChroma;
         }
 
-        private string[] selection(int[] pathScore,string[] chroma)
+        private string[][] selection(int[] pathScore,string[] chroma)
         {
-            List<string> Listchroma = new List<string>();
+            string[][] ret = new string[pathScore.Length][];
+
             for (int i = 0; i < pathScore.Length; i++)
             {
-                if (pathScore[i] != 0)
-                    for (int j = 0; j < pathScore[i]; j++)
-                    {
-                        Listchroma.Add(chroma[i]);
-                    }
+                ret[i] = new string[2];
             }
-            return Listchroma.ToArray();
+            List<string> Listchroma = new List<string>();
+            Listchroma.Clear();
+            for (int i = 0; i < pathScore.Length; i++)
+            {
+                ret[i][0] = chroma[i];
+                ret[i][1] = pathScore.Length.ToString();
+            }
+
+            return ret;
         }
 
         private void createIntialPopulation()
