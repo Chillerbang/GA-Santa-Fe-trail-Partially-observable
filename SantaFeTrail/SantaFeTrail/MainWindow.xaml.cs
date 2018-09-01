@@ -182,31 +182,38 @@ namespace SantaFeTrail
                 }
                 // find index of parent
                 int parentaPos = 0;
-                int parentbPos = 0; 
+                int parentbPos = 0;
+                int vala = 0;
+                int valb = 0;
 
-                for (int j = geneticPool.Length; j > 0; j--)
+
+                for (int j = 0; j < geneticPool.Length; j++)
                 {
+                    if (Int32.TryParse(geneticPool[j][1], out vala))
+                        postionAParent -= vala;
+
                     if (postionAParent < 0)
                     {
-                        parentaPos = geneticPool.Length - j;
+                        break;
                     }
                     else
                     {
-                        if (Int32.TryParse(geneticPool[j][1], out temp))
-                            postionAParent -= temp;
+                        parentaPos++;
                     }
                 }
 
-                for (int j = geneticPool.Length; j > 0; j--)
+                for (int j = 0; j < geneticPool.Length; j++)
                 {
+
+                    if (Int32.TryParse(geneticPool[j][1], out valb))
+                        postionBParent -= valb;
                     if (postionBParent < 0)
                     {
-                        parentbPos = geneticPool.Length - j;
+                        break;
                     }
                     else
                     {
-                        if (Int32.TryParse(geneticPool[j][1], out temp))
-                            postionBParent -= temp;
+                        parentbPos++;
                     }
                 }
                 // ratio/ratio split
@@ -218,18 +225,17 @@ namespace SantaFeTrail
 
         private string[][] selection(int[] pathScore,string[] chroma)
         {
-            string[][] ret = new string[pathScore.Length][];
+            string[][] ret = new string[chroma.Length][];
 
-            for (int i = 0; i < pathScore.Length; i++)
+            for (int i = 0; i < chroma.Length; i++)
             {
                 ret[i] = new string[2];
             }
-            List<string> Listchroma = new List<string>();
-            Listchroma.Clear();
+
             for (int i = 0; i < pathScore.Length; i++)
             {
                 ret[i][0] = chroma[i];
-                ret[i][1] = pathScore.Length.ToString();
+                ret[i][1] = pathScore[i].ToString();
             }
 
             return ret;
