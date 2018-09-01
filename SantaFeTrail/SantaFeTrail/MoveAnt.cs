@@ -16,7 +16,7 @@ namespace SantaFeTrail
             aPostiony = aYpos;
         }
 
-        public int CalcScore(int[] MovementSet, char[][] map)
+        public int CalcScore(string MovementSet, char[][] map)
         {
             int width = 25;
             int height = 25;
@@ -29,18 +29,18 @@ namespace SantaFeTrail
             {
                 switch (MovementSet[i])
                 {
-                    case 0: // move up
-                        if (currentx == width-1)
+                    case '0': // move up
+                        if (currenty == 0)
                         {
-                            currentx = 0;
+                            currenty = height - 1;
                         }
                         else
                         {
-                            currentx -= 1;
+                            currenty -= 1;
                         }
                         break;
-                    case 1: // move right
-                        if (currenty == 24)
+                    case '1': // move down
+                        if (currenty == height - 1)
                         {
                             currenty = 0;
                         }
@@ -49,30 +49,30 @@ namespace SantaFeTrail
                             currenty += 1;
                         }
                         break;
-                    case 2: // move down
+                    case '2': // move Left
                         if (currentx == 0)
                         {
-                            currentx = 24;
+                            currentx = width - 1;
+                        }
+                        else
+                        {
+                            currentx -= 1;
+                        }
+                        break;
+                    case '3': // move right
+                        if (currentx == width - 1)
+                        {
+                            currentx = 0;
                         }
                         else
                         {
                             currentx += 1;
                         }
                         break;
-                    case 3: // move left
-                        if (currenty == 0)
-                        {
-                            currenty = 24;
-                        }
-                        else
-                        {
-                            currenty -= 1;
-                        }
-                        break;
                 }
-                if (map[currentx][currenty] == 1)
+                if (map[currenty][currentx] == '1')
                 {
-                    map[currentx][currenty] = '0';
+                    map[currenty][currentx] = '0';
                     score++;
                 }
             }

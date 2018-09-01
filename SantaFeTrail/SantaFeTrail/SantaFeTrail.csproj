@@ -86,6 +86,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="bin\Debug\Trail.map" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -100,6 +101,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Coin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="bin\Debug\mario.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="bin\Debug\Coin.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
