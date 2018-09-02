@@ -100,7 +100,8 @@ namespace SantaFeTrail
                 if (map[currenty][currentx] == '1')
                 {
                     map[currenty][currentx] = '1';
-                    score += 15;
+                    score += 10;
+                    map[currenty][currentx] = '0';
                     for (int l = 0; l < allCoins.Length; l++)
                     {
                         if (allCoins[l].y == currenty && allCoins[l].x == currentx)
@@ -109,38 +110,33 @@ namespace SantaFeTrail
                             break;
                         }
                     }
-                }
+                }else
                 if (map[currenty][currentx] == '0')
                 {
                     map[currenty][currentx] = '3';
                     // encorage if you are getting closer
-                    for (int l = 0; l < allCoins.Length; l++)
-                    {
-                        if (((allCoins[l].x + 1 == currentx) || (allCoins[l].x - 1 == currentx) || (allCoins[l].x == currentx)) && ((allCoins[l].y == currenty) || (allCoins[l].y - 1 == currenty) || (allCoins[l].y + 1 == currenty)) && (allCoins[l].found == false))
-                        {
-                            score += 5;
-                        }
-                        else
-                        {
-                            //if (score > 2)
-                            //{
-                            //    score -= 1;
-                            //}
-                            
-                        }
+                    score += 1;
+                    //for (int l = 0; l < allCoins.Length; l++)
+                    //{
+                    //    if (((allCoins[l].x + 1 == currentx) || (allCoins[l].x - 1 == currentx) || (allCoins[l].x == currentx)) && ((allCoins[l].y == currenty) || (allCoins[l].y - 1 == currenty) || (allCoins[l].y + 1 == currenty)) && (allCoins[l].found == false))
+                    //    {
+                    //        //score += 5;
+                    //    }
+                    //    else
+                    //    {
+                    //        //if (score > 2)
+                    //        //{
+                    //        //    score -= 1;
+                    //        //}
 
-                    }
-                }
+                    //    }
+
+                    //}
+                }else
                 if (map[currenty][currentx] == '3')
                 {
-                    if (score > 12)
-                    {
-                        score -= 100;
-                    }
-                    else
-                    {
-                        score= 3;
-                    }
+                    if (score > 2)
+                        score -= 1;
                 }
             }
             return score;
