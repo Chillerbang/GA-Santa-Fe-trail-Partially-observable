@@ -25,14 +25,18 @@ namespace SantaFeTrail
     {
 
         Random random ;
-        private static int maxScore = 600;
-        private static int numberOfcandidates = 50000;
-        private static int chromaLenght = 250;
+        private static int maxScore = 650;
+        private static int numberOfcandidates = 10000;
+        private static int chromaLenght = 800;
+        private static int numbIterBeforExting = 5;
         private static double constmutationChance = 0.02;
+        private static bool blnhighscore = true;
+        private bool selectionRandom = true;
 
         string bestChroma = "";
         int bestScore = 0;
         List<string> stringBest;
+        List<int> scoreBest;
 
         char[][] map;
         int width = 25;
@@ -40,12 +44,13 @@ namespace SantaFeTrail
         int aXpos = 0;
         int aYpos = 0;
 
-        
+
         string[] chroma = new string[numberOfcandidates]; // limited to that of 200 
 
         public MainWindow()
         {
             InitializeComponent();
+            System.Diagnostics.Debug.WriteLine("new run! ");
         }
 
         private void Start(object sender, RoutedEventArgs e)
@@ -56,7 +61,12 @@ namespace SantaFeTrail
             drawGUI(map, aXpos, aYpos);
             //start genetic algorithem
             createIntialPopulation();
-            int max = 0;
+            //metrics
+            int localmax = 0;
+            int localmin = 650;
+            int globalMin = 650;
+            scoreBest = new List<int>();
+
             int NumberIterations = 0;
             // testing
             int[] pathScore = new int[numberOfcandidates];
@@ -65,7 +75,7 @@ namespace SantaFeTrail
             {
                 cpyMap[k] = new char[width];
             }
-            while (max < maxScore) { 
+            while (bestScore < maxScore) { 
                 for (int i = 0; i < numberOfcandidates; i++)
                 {
                     for (int j = 0; j < width; j++)
@@ -87,7 +97,7 @@ namespace SantaFeTrail
                 
                 }
                 
-                if (NumberIterations == 20)
+                if (NumberIterations == numbIterBeforExting)
                 {
                     //for (int j = 0; j < width; j++)
                     //{
@@ -97,24 +107,53 @@ namespace SantaFeTrail
                     //    }
                     //}
                     System.Diagnostics.Debug.WriteLine("pepehands ");
+
+                    double ave = 0;
+                    foreach (int v in scoreBest)
+                    {
+                        ave += v;
+                    }
+                    ave = ave / scoreBest.Count;
+
+
+                    System.Diagnostics.Debug.WriteLine("MAX " + bestScore);
+                    System.Diagnostics.Debug.WriteLine("Min " + globalMin);
+                    System.Diagnostics.Debug.WriteLine("Average " + ave);
+
                     // nuke it all
                     NumberIterations = 0;
+                    bestScore = 0;
+                    localmax = 0;
+                    globalMin = 650;
+                    localmin = 650;
+                    scoreBest.Clear();
                     createIntialPopulation();
                 }
 
-                max = pathScore.Max();
-                int postion = Array.IndexOf(pathScore, max);
-                stringBest.Add(chroma[postion]);
+                localmax = pathScore.Max();
+                localmin = pathScore.Min();
+                scoreBest.Add(localmax);
 
-                if (max > bestScore)
+                System.Diagnostics.Debug.WriteLine("Value: " + localmax);
+
+                int postionMAX = Array.IndexOf(pathScore, localmax);
+                int postionMIN = Array.IndexOf(pathScore, localmin);
+                stringBest.Add(chroma[postionMAX]);
+
+                if (localmax > bestScore)
                 {
-                    bestScore = max;
-                    bestChroma = chroma[postion];
+                    bestScore = localmax;
+                    bestChroma = chroma[postionMAX];
                 }
 
-                System.Diagnostics.Debug.WriteLine("MAX " + max);
+                if (localmin < globalMin)
+                {
+                    globalMin = localmin;
+                }
+
+                
                
-                if (max > maxScore)
+                if (bestScore > maxScore)
                 {
                     for (int j = 0; j < width; j++)
                     {
@@ -124,7 +163,29 @@ namespace SantaFeTrail
                         }
                     }
                     // play the best
-                    AnimateBest(cpyMap, chroma[postion]);
+                    AnimateBest(cpyMap, chroma[postionMAX]);
+                    System.Diagnostics.Debug.WriteLine("amazing!");
+
+                    double ave = 0;
+                    foreach (int v in scoreBest)
+                    {
+                        ave += v;
+                    }
+                    ave = ave / scoreBest.Count;
+
+
+                    System.Diagnostics.Debug.WriteLine("MAX " + bestScore);
+                    System.Diagnostics.Debug.WriteLine("Min " + globalMin);
+                    System.Diagnostics.Debug.WriteLine("Average " + ave);
+
+                    // nuke it all
+                    NumberIterations = 0;
+                    bestScore = 0;
+                    localmax = 0;
+                    globalMin = 650;
+                    localmin = 650;
+                    scoreBest.Clear();
+                    createIntialPopulation();
                     break;
                 }
                 
@@ -140,6 +201,7 @@ namespace SantaFeTrail
                 // generate that me some stuff? no i mean i want a new population 
                 chroma = newPopulation(geneticPool);
                 // include the high scores
+                if (blnhighscore)
                 chroma[RandomNumber(0, numberOfcandidates)] = bestChroma;
                 NumberIterations++;
             }
@@ -212,16 +274,29 @@ namespace SantaFeTrail
             for (int i = 0; i < pathScore.Length; i++)
             {
                 int count = 0;
-                if (pathScore[i] > 0)
-                    for (int j = 0; j < pathScore[i]; j++)
+                if (selectionRandom)
+                {
+                    if (pathScore[i] > 0)
                     {
-                        Listchroma.Add(chroma[i]);
-                        count++;
-                        //if (count > 100)
-                        //{
-                        //    break;
-                        //}
+                        Listchroma.Add(chroma[RandomNumber(0, pathScore.Length)]); 
                     }
+
+                }
+                else
+                {
+                    //proportinal selection
+                    if (pathScore[i] > 0)
+                        for (int j = 0; j < pathScore[i]; j++)
+                        {
+                            Listchroma.Add(chroma[i]);
+                            count++;
+                            //if (count > 100)
+                            //{
+                            //    break;
+                            //}
+                        }
+                }
+                
             }
             return Listchroma.ToArray();
         }

@@ -101,7 +101,7 @@ namespace SantaFeTrail
                 {
                     map[currenty][currentx] = '1';
                     score += 10;
-                    map[currenty][currentx] = '0';
+                    map[currenty][currentx] = '3';
                     for (int l = 0; l < allCoins.Length; l++)
                     {
                         if (allCoins[l].y == currenty && allCoins[l].x == currentx)
@@ -115,7 +115,7 @@ namespace SantaFeTrail
                 {
                     map[currenty][currentx] = '3';
                     // encorage if you are getting closer
-                    score += 1;
+                    score += 3;
                     //for (int l = 0; l < allCoins.Length; l++)
                     //{
                     //    if (((allCoins[l].x + 1 == currentx) || (allCoins[l].x - 1 == currentx) || (allCoins[l].x == currentx)) && ((allCoins[l].y == currenty) || (allCoins[l].y - 1 == currenty) || (allCoins[l].y + 1 == currenty)) && (allCoins[l].found == false))
@@ -135,8 +135,7 @@ namespace SantaFeTrail
                 }else
                 if (map[currenty][currentx] == '3')
                 {
-                    if (score > 2)
-                        score -= 1;
+                        score -= 2;
                 }
             }
             return score;
