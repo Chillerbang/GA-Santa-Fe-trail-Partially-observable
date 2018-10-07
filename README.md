@@ -1,4 +1,4 @@
-# Optimised_Porject_01
+# GA-Santa-Fe-trail-Partially-observable
 An optimisation problem solved kinda!
 
 This project tackles the santa Fe trail problem, but using genetic programming methods with in a partially observable environment such as:
